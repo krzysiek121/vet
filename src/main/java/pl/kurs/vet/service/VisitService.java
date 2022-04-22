@@ -2,8 +2,6 @@ package pl.kurs.vet.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -91,6 +89,7 @@ public class VisitService {
     }
 
     public static boolean checkOverlapping(LocalDateTime start, Set<Visit> list) {
+
         if (list != null || !list.isEmpty()) {
             LocalDateTime slot = start;
             for (LocalDateTime t : getLocalDateTimesFromVisits(list)) {
@@ -158,7 +157,7 @@ public class VisitService {
         List<LocalDateTime> slots = new ArrayList<>();
         List<CheckDto> list = new ArrayList<>();
         LocalDateTime ldt = start;
-        while (slots.get(slots.size() - 1).plusMinutes(60).isBefore(stop.plusMinutes(1))) {
+        while (slots.get(slots.size() - 1).plusMinutes(121).isBefore(stop.plusMinutes(1))) {
 
             slots.add(ldt);
             list.add(new CheckDto(modelMapper.map(doctor, DoctorDtoCheck.class), ldt.toString()));
@@ -171,8 +170,9 @@ public class VisitService {
 
     public static List<CheckDto> getListOfSlots(Doctor doctor, LocalDateTime start, LocalDateTime stop, ModelMapper modelMapper) {
         List<CheckDto> list = new ArrayList<>();
-        for (LocalDateTime timeSlot : time(start, stop, doctor.getVisits().stream().map(s -> s.getData()).collect(Collectors.toList()))) {
-            list.add(new CheckDto(modelMapper.map(doctor, DoctorDtoCheck.class), timeSlot.toString()));
+        List<LocalDateTime> listOfDoctorVisits = getLocalDateTimeFromList(doctor);
+        for (LocalDateTime timeSlot : time(start, stop, listOfDoctorVisits)) {
+            list.add(new CheckDto(modelMapper.map(doctor, DoctorDtoCheck.class), timeSlot.toString().replace('T', ' ')));
         }
         //System.out.println(list);
 
@@ -185,13 +185,14 @@ public class VisitService {
         LocalDateTime ldt = start;
         slots.add(doubleChecker(start, list));
 
-        while (slots.get(slots.size() - 1).plusMinutes(60).isBefore(stop.plusMinutes(1))) {
+        while (slots.get(slots.size() - 1).plusMinutes(121).isBefore(stop.plusMinutes(1))) {
 
             ldt = doubleChecker(slots.get(slots.size() - 1), list);
             if (ldt == slots.get(slots.size() - 1)) {
                 ldt = doubleChecker(slots.get(slots.size() - 1).plusMinutes(60), list);
             }
             slots.add(ldt);
+
         }
         return slots;
     }
@@ -245,8 +246,12 @@ public class VisitService {
             throw new TokenNotFoundException("TOKEN_NOT_FOUND");
         }
 
-
         return new ConfirmResponse("Wizyta Anulowana");
     }
+
+    public static List<LocalDateTime> getLocalDateTimeFromList(Doctor doctor) {
+        return doctor.getVisits().stream().map(s -> s.getData()).collect(Collectors.toList());
+    }
+
 }
 

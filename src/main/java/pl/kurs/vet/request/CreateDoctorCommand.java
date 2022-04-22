@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.kurs.vet.validations.CheckSalary;
+import pl.kurs.vet.validations.CheckUniqueNip;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -27,6 +28,7 @@ public class CreateDoctorCommand {
     @CheckSalary
     private Integer salary;
     @NotEmpty(message = "NIP_NOT_EMPTY")
+    @CheckUniqueNip
     private String nip;
 
 }

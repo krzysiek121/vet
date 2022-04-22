@@ -10,9 +10,7 @@ import pl.kurs.vet.model.Visit;
 import javax.persistence.LockModeType;
 
 public interface VisitRepository extends JpaRepository<Visit, Integer> {
-    //@Lock(LockModeType.PESSIMISTIC_READ)
-    //@Transactional(readOnly = true)
-    //Visit findById(int id);
+
     //@Lock(LockModeType.PESSIMISTIC_READ)
     Visit findByToken(String token);
 
