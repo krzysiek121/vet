@@ -25,7 +25,7 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
 
-    @PostConstruct
+    //@PostConstruct
     public void init() {
         Patient l1 = new Patient("xx", "xx", "xxx", 11, "xx", "xxx", "wardawa.post@gmail.com");
         patientRepository.saveAndFlush(l1);

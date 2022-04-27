@@ -8,6 +8,7 @@ import pl.kurs.vet.validations.CheckAnimalSupport;
 import pl.kurs.vet.validations.CheckDate;
 import pl.kurs.vet.validations.CheckDoctorTypeSupport;
 
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotEmpty;
 
 @Getter

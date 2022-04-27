@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.vet.exception.DateWrongException;
@@ -66,14 +67,13 @@ public class VisitService {
 
     @Transactional
     public ConfirmResponse confirm(String token) throws Exception {
-        Visit visit = visitRepository.findByToken(token);
-        if (visit == null) {
-            throw new TokenNotFoundException("TOKEN_NOT_FOUND");
-        }
-        if (visit.getTimeSendConfirmation().isBefore(visit.getTimeSendConfirmation().plusMinutes(5))) {
+
+        Visit visit = visitRepository.findByToken(token).orElseThrow(() -> new TokenNotFoundException("TOKEN_NOT_FOUND"));
+
+
+        if (LocalDateTime.now().isBefore(visit.getTimeSendConfirmation().plusMinutes(2))) {
 
             visit.setConfirmed(true);
-
 
             return new ConfirmResponse("Wizyta Potwierdzona !!");
         } else {
@@ -227,7 +227,7 @@ public class VisitService {
         }
         return date.isBefore(compareToDate) || date.isEqual(compareToDate);
     }
-
+    @Async
     public void sendConfirmationToEmail(String PatientEmail, String data, String token) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(PatientEmail);
@@ -238,15 +238,12 @@ public class VisitService {
     }
 
     public ConfirmResponse deleteByToken(String token) {
-        Visit visit = visitRepository.findByToken(token);
+        Visit visit = visitRepository.findByToken(token).orElseThrow(() -> new TokenNotFoundException("TOKEN_NOT_FOUND"));
 
-        if (visit != null) {
             visitRepository.delete(visit);
-        } else {
-            throw new TokenNotFoundException("TOKEN_NOT_FOUND");
-        }
 
-        return new ConfirmResponse("Wizyta Anulowana");
+
+        return new ConfirmResponse("VISIT_CANCELED");
     }
 
     public static List<LocalDateTime> getLocalDateTimeFromList(Doctor doctor) {

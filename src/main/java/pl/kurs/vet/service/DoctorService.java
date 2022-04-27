@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.vet.exception.DoctorNotFoundException;
+import pl.kurs.vet.exception.DoctorNotWorkingException;
 import pl.kurs.vet.model.Doctor;
 import pl.kurs.vet.repository.DoctorReposirtory;
 import pl.kurs.vet.request.CreateDoctorCommand;
@@ -23,7 +24,7 @@ public class DoctorService {
     private final DoctorReposirtory doctorReposirtory;
 
 
-    @PostConstruct
+    //@PostConstruct
     public void init() {
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
         Doctor l2 = new Doctor("Darek", "xx", "kardiolog", "pies", 000, "xxxx");
@@ -48,6 +49,7 @@ public class DoctorService {
         doctorReposirtory.saveAndFlush(l10);
         doctorReposirtory.saveAndFlush(l11);
 
+        System.out.println(l1);
 
 
     }
@@ -56,15 +58,18 @@ public class DoctorService {
         Doctor toSave = new Doctor(command.getName(), command.getSurname(), command.getType(), command.getAnimalType(), command.getSalary(), command.getNip());
         return doctorReposirtory.saveAndFlush(toSave);
     }
+
     @Transactional(readOnly = true)
     @Lock(LockModeType.PESSIMISTIC_READ)
     public Doctor findDoctorById(int id) {
-         return doctorReposirtory.findById(id).orElseThrow(() -> new DoctorNotFoundException(id));
+        return doctorReposirtory.findById(id).orElseThrow(() -> new DoctorNotFoundException(id));
     }
+
     @Transactional(readOnly = true)
     public List<Doctor> findAllDoctors() {
         return doctorReposirtory.findAll();
     }
+
     public List<Doctor> doctorListWithPagination(int page, int size) {
 
         List<Doctor> doctors = new ArrayList<Doctor>();
@@ -76,4 +81,14 @@ public class DoctorService {
         return doctors;
     }
 
- }
+    @Transactional
+    public void softDelete(int id) {
+        Doctor doctor = findDoctorById(id);
+        if (doctor.isWorking()) {
+            doctor.setWorking(false);
+        } else {
+            throw new DoctorNotWorkingException("DOCTOR_HAVE_NOT_WORKING_STATUS");
+        }
+
+    }
+}

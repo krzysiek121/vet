@@ -13,11 +13,12 @@ import pl.kurs.vet.model.Visit;
 import javax.persistence.LockModeType;
 import javax.print.Doc;
 import java.util.List;
+import java.util.Optional;
 
 public interface DoctorReposirtory extends JpaRepository<Doctor, Integer> {
-    @Transactional(readOnly = true)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Doctor> findById(int id);
     List<Doctor> findByType(String type);
-    @Transactional(readOnly = true)
     List<Doctor> findByAnimalType(String type);
     boolean existsByNip(int nip);
 

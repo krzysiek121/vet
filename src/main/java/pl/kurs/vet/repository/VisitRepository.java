@@ -8,11 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.vet.model.Visit;
 
 import javax.persistence.LockModeType;
+import java.util.Optional;
 
 public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
-    //@Lock(LockModeType.PESSIMISTIC_READ)
-    Visit findByToken(String token);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Visit> findByToken(String token);
 
 
 }

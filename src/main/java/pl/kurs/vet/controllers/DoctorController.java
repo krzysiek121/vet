@@ -17,6 +17,7 @@ import pl.kurs.vet.request.CreateDoctorCommand;
 import pl.kurs.vet.service.DoctorService;
 import pl.kurs.vet.validations.CheckDoctorId;
 
+import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,33 +29,30 @@ import java.util.stream.Collectors;
 public class DoctorController {
 
     private final DoctorService doctorService;
-    private final DoctorReposirtory doctorReposirtory;
     private final ModelMapper modelMapper;
 
 
     @PostMapping
     public ResponseEntity<Doctor> saveDoctor(@RequestBody CreateDoctorCommand command) {
-        Doctor saved = doctorService.save(command);
-        return new ResponseEntity<Doctor>(HttpStatus.CREATED);
+        return  ResponseEntity.status(HttpStatus.CREATED).body(doctorService.save(command));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<DoctorDtoGet> getById(@PathVariable(value = "id") int id) {
-        return new ResponseEntity<DoctorDtoGet>(modelMapper.map(doctorService.findDoctorById(id), DoctorDtoGet.class), HttpStatus.OK);
+    public ResponseEntity<Doctor> getById(@PathVariable(value = "id") int id) {
+        return new ResponseEntity<Doctor>(doctorService.findDoctorById(id), HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<DoctorDtoGet>> findBAllWithPagination(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<List<Doctor>> findBAllWithPagination(@RequestParam(defaultValue = "0") int page,
      @RequestParam(defaultValue = "3") int size) {
-        return new ResponseEntity<List<DoctorDtoGet>>(doctorService.doctorListWithPagination(page, size)
-                .stream().map(s -> modelMapper.map(s, DoctorDtoGet.class)).collect(Collectors.toList()), HttpStatus.OK);
+        return new ResponseEntity<List<Doctor>>(doctorService.doctorListWithPagination(page, size), HttpStatus.OK);
+        //return new ResponseEntity<List<DoctorDtoGet>>(doctorService.doctorListWithPagination(page, size)
+           //     .stream().map(s -> modelMapper.map(s, DoctorDtoGet.class)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
-    @Transactional
-    @PutMapping(value = "/fire/{id}")
+
+    @PutMapping(value = "/{id}/fire")
     public ResponseEntity<String> softDelete(@PathVariable(value = "id") int id) {
-        Doctor doctor = doctorService.findDoctorById(id);
-        doctor.setWorking(false);
         return new ResponseEntity<String>("changed status of given doctor, this doctor will not be able to handle any visits", HttpStatus.OK);
 
     }

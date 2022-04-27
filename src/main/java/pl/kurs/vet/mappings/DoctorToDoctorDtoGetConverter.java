@@ -2,9 +2,10 @@ package pl.kurs.vet.mappings;
 
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
+import org.springframework.stereotype.Service;
 import pl.kurs.vet.model.Doctor;
 import pl.kurs.vet.model.dto.DoctorDtoGet;
-
+@Service
 public class DoctorToDoctorDtoGetConverter implements Converter<Doctor, DoctorDtoGet> {
 
     @Override

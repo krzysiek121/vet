@@ -26,7 +26,7 @@ public class Patient {
     private String email;
     @Version
     private long version;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner1", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "patient", cascade = {CascadeType.ALL})
     private Set<Visit> visits = new HashSet<>();
 
     public Patient(String nameOfAnimal, String species, String race, int age, String ownerName, String ownerSurname, String email) {

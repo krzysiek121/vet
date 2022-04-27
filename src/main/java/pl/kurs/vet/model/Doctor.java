@@ -9,14 +9,11 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
-@ToString
+@ToString(exclude = {"visits"})
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(uniqueConstraints = {
-        @UniqueConstraint(name = "UC_DOCTOR_NIP", columnNames = "nip")
-})
 @EqualsAndHashCode(exclude = {"visits"})
 public class Doctor {
     @Id
@@ -37,8 +34,9 @@ public class Doctor {
     private boolean isWorking = true;
     @Version
     private long version;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "doctor", cascade = {CascadeType.ALL})
     private Set<Visit> visits = new HashSet<>();
+
 
     public Doctor(@NotEmpty(message = "NAME_NOT_EMPTY") String name, @NotEmpty(message = "SURNAME_NOT_EMPTY") String surname, @NotEmpty(message = "TYPE_NOT_EMPTY") String type, @NotEmpty(message = "ANIMAL_NOT_EMPTY") String animalType, @NotEmpty(message = "SALARY_NOT_EMPTY") Integer salary, @NotEmpty(message = "NIP_NOT_EMPTY") String nip) {
         this.name = name;

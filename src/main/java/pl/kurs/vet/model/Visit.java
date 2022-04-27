@@ -20,15 +20,13 @@ public class Visit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @NotNull(message = "doctor_NOT_EMPTY")
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "doctor_id")
-    private Doctor owner;
+    private Doctor doctor;
     @NotNull(message = "patient_NOT_EMPTY")
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "patient_id")
-    private Patient owner1;
+    private Patient patient;
     private LocalDateTime data;
     private String token;
     private boolean isConfirmed = false;
@@ -36,9 +34,9 @@ public class Visit {
     @Version
     private long version;
 
-    public Visit(Doctor owner, Patient owner1, LocalDateTime data, String token, LocalDateTime timeSendConfirmation) {
-        this.owner = owner;
-        this.owner1 = owner1;
+    public Visit(Doctor doctor, Patient patient, LocalDateTime data, String token, LocalDateTime timeSendConfirmation) {
+        this.doctor = doctor;
+        this.patient = patient;
         this.data = data;
         this.token = token;
         this.timeSendConfirmation = timeSendConfirmation;

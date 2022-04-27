@@ -8,13 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import pl.kurs.vet.response.ConfirmResponse;
-
-import java.util.Date;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handleMethodArgumentNotValidException(MethodArgumentNotValidException exc) {
@@ -43,7 +42,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TimeVisitException.class)
     public ResponseEntity handleTimeVisitException(TimeVisitException exc) {
-        return new ResponseEntity(new ErrorDto("CONFIRMED_TOO_LATE"), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(new ErrorDto(exc.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(StaleObjectStateException.class)
@@ -58,6 +57,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DateWrongException.class)
     public ResponseEntity handleDateWrongException(DateWrongException exc) {
         return new ResponseEntity(new ErrorDto(exc.getMessage()),HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(DoctorNotWorkingException.class)
+    public ResponseEntity handleDoctorNotWorkingException(DoctorNotWorkingException exc) {
+        return new ResponseEntity(new ErrorDto(exc.getMessage()),HttpStatus.BAD_REQUEST);
     }
     @Value
     @Builder

@@ -25,7 +25,7 @@ public class VisitController {
 
     @PostMapping
     public ResponseEntity<VisitSaveResponse> save(@RequestBody @Valid CreateVisitCommand visitCommand) {
-        return new ResponseEntity<VisitSaveResponse>(visitService.save(visitCommand), HttpStatus.OK);
+        return new ResponseEntity<VisitSaveResponse>(visitService.save(visitCommand), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/confirm/{token}")

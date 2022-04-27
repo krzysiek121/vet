@@ -4,8 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pl.kurs.vet.repository.DoctorReposirtory;
+import pl.kurs.vet.repository.PatientRepository;
 import pl.kurs.vet.validations.CheckDate;
 import pl.kurs.vet.validations.CheckDoctorId;
+import pl.kurs.vet.validations.CheckId;
 import pl.kurs.vet.validations.CheckPatientId;
 
 import javax.validation.constraints.NotEmpty;
@@ -18,10 +21,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CreateVisitCommand {
     @NotNull(message = "doctorId_NOT_EMPTY")
-    @CheckDoctorId
+    @CheckId(repositoryType = DoctorReposirtory.class)
     private int doctorId;
     @NotNull(message = "patientId_NOT_EMPTY")
-    @CheckPatientId
+    @CheckId(repositoryType = PatientRepository.class)
     private int patientId;
     @NotEmpty
     @CheckDate
