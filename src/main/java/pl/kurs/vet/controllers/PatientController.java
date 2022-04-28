@@ -21,7 +21,7 @@ public class PatientController {
 
     @PostMapping
     public ResponseEntity<Patient> save(CreatePatientCommand patientCommand) {
-        return new ResponseEntity<Patient>(patientService.save(patientCommand), HttpStatus.CREATED);
+        return  ResponseEntity.status(HttpStatus.CREATED).body(patientService.save(patientCommand));
     }
 
     @GetMapping(value = "/{id}")
@@ -30,11 +30,7 @@ public class PatientController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Patient>> findByPublished(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size
-    ) {
-        return new ResponseEntity<List<Patient>>(patientService.patientListWithPagination(page, size), HttpStatus.OK);
-
+    public ResponseEntity<List<Patient>> findByPublished(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size
+    ) { return new ResponseEntity<List<Patient>>(patientService.patientListWithPagination(page, size), HttpStatus.OK);
     }
 }

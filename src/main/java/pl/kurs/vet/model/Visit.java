@@ -1,10 +1,7 @@
 package pl.kurs.vet.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -36,7 +33,9 @@ public class Visit {
 
     public Visit(Doctor doctor, Patient patient, LocalDateTime data, String token, LocalDateTime timeSendConfirmation) {
         this.doctor = doctor;
+        this.doctor.getVisits().add(this);
         this.patient = patient;
+        this.patient.getVisits().add(this);
         this.data = data;
         this.token = token;
         this.timeSendConfirmation = timeSendConfirmation;

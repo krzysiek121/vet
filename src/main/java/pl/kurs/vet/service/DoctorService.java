@@ -38,18 +38,17 @@ public class DoctorService {
         Doctor l10 = new Doctor("Tomasz", "xx", "laryngolog", "pies", 000, "xxx31");
         Doctor l11 = new Doctor("Marcin", "xx", "laryngolog", "kot", 000, "xxx54");
         doctorReposirtory.saveAndFlush(l1);
-        doctorReposirtory.saveAndFlush(l2);
-        doctorReposirtory.saveAndFlush(l3);
-        doctorReposirtory.saveAndFlush(l4);
-        doctorReposirtory.saveAndFlush(l5);
-        doctorReposirtory.saveAndFlush(l6);
-        doctorReposirtory.saveAndFlush(l7);
-        doctorReposirtory.saveAndFlush(l8);
-        doctorReposirtory.saveAndFlush(l9);
-        doctorReposirtory.saveAndFlush(l10);
-        doctorReposirtory.saveAndFlush(l11);
+        //doctorReposirtory.saveAndFlush(l2);
+        //doctorReposirtory.saveAndFlush(l3);
+       // doctorReposirtory.saveAndFlush(l4);
+      //  doctorReposirtory.saveAndFlush(l5);
+      //  doctorReposirtory.saveAndFlush(l6);
+//        doctorReposirtory.saveAndFlush(l8);
+     //   doctorReposirtory.saveAndFlush(l9);
+      //  doctorReposirtory.saveAndFlush(l10);
+      //  doctorReposirtory.saveAndFlush(l11);
 
-        System.out.println(l1);
+    //    System.out.println(l1);
 
 
     }

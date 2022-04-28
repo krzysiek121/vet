@@ -46,8 +46,6 @@ public class DoctorController {
     public ResponseEntity<List<Doctor>> findBAllWithPagination(@RequestParam(defaultValue = "0") int page,
      @RequestParam(defaultValue = "3") int size) {
         return new ResponseEntity<List<Doctor>>(doctorService.doctorListWithPagination(page, size), HttpStatus.OK);
-        //return new ResponseEntity<List<DoctorDtoGet>>(doctorService.doctorListWithPagination(page, size)
-           //     .stream().map(s -> modelMapper.map(s, DoctorDtoGet.class)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
 

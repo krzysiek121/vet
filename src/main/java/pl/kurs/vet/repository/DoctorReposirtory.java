@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DoctorReposirtory extends JpaRepository<Doctor, Integer> {
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    //@Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Doctor> findById(int id);
     List<Doctor> findByType(String type);
     List<Doctor> findByAnimalType(String type);

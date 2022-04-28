@@ -118,10 +118,10 @@ public class VisitService {
         return listOfVisits;
     }
 
-
+    @Transactional
     public List<CheckDto> check(CreateCheckVisitCommand visitCommand) {
-        LocalDateTime start = LocalDateTime.parse(visitCommand.getDate_from(), formatter);
-        LocalDateTime stop = LocalDateTime.parse(visitCommand.getDate_to(), formatter);
+        LocalDateTime start = LocalDateTime.parse(visitCommand.getFrom(), formatter);
+        LocalDateTime stop = LocalDateTime.parse(visitCommand.getTo(), formatter);
 
         if (start.isAfter(stop) || start.isEqual(stop)) {
             throw new DateWrongException("WRONG_DATES_TYPED");
@@ -137,14 +137,14 @@ public class VisitService {
 
     }
 
-    public static List<CheckDto> getSlots(List<Doctor> doctors, LocalDateTime start, LocalDateTime stop, ModelMapper modelMapper) {
+    public List<CheckDto> getSlots(List<Doctor> doctors, LocalDateTime start, LocalDateTime stop, ModelMapper modelMapper) {
         List<CheckDto> list = new ArrayList<>();
-        List<LocalDateTime> slots;
-        for (Doctor d : doctors) {
-            if (d.getVisits() != null || !d.getVisits().isEmpty()) {
-                list.addAll(getListOfSlots(d, start, stop, modelMapper));
+
+        for (Doctor doctor : doctors) {
+            if (doctor.getVisits() != null || !doctor.getVisits().isEmpty()) {
+                list.addAll(getListOfSlots(doctor, start, stop, modelMapper));
             } else {
-                list.addAll(getListOfSlotsIfNoVisits(d, start, stop, modelMapper));
+                list.addAll(getListOfSlotsIfNoVisits(doctor, start, stop, modelMapper));
             }
 
 
@@ -153,11 +153,11 @@ public class VisitService {
         return sort(list);
     }
 
-    public static List<CheckDto> getListOfSlotsIfNoVisits(Doctor doctor, LocalDateTime start, LocalDateTime stop, ModelMapper modelMapper) {
+    public List<CheckDto> getListOfSlotsIfNoVisits(Doctor doctor, LocalDateTime start, LocalDateTime stop, ModelMapper modelMapper) {
         List<LocalDateTime> slots = new ArrayList<>();
         List<CheckDto> list = new ArrayList<>();
         LocalDateTime ldt = start;
-        while (slots.get(slots.size() - 1).plusMinutes(121).isBefore(stop.plusMinutes(1))) {
+        while (slots.get(slots.size() - 1).plusMinutes(120).isBefore(stop.plusMinutes(1))) {
 
             slots.add(ldt);
             list.add(new CheckDto(modelMapper.map(doctor, DoctorDtoCheck.class), ldt.toString()));
@@ -168,24 +168,23 @@ public class VisitService {
         return list;
     }
 
-    public static List<CheckDto> getListOfSlots(Doctor doctor, LocalDateTime start, LocalDateTime stop, ModelMapper modelMapper) {
+    public List<CheckDto> getListOfSlots(Doctor doctor, LocalDateTime start, LocalDateTime stop, ModelMapper modelMapper) {
         List<CheckDto> list = new ArrayList<>();
         List<LocalDateTime> listOfDoctorVisits = getLocalDateTimeFromList(doctor);
         for (LocalDateTime timeSlot : time(start, stop, listOfDoctorVisits)) {
             list.add(new CheckDto(modelMapper.map(doctor, DoctorDtoCheck.class), timeSlot.toString().replace('T', ' ')));
         }
-        //System.out.println(list);
 
         return list;
     }
 
-    public static List<LocalDateTime> time(LocalDateTime start, LocalDateTime stop, List<LocalDateTime> list) {
+    public List<LocalDateTime> time(LocalDateTime start, LocalDateTime stop, List<LocalDateTime> list) {
         List<LocalDateTime> slots = new ArrayList<>();
         List<LocalDateTime> whiteList = new ArrayList<>();
         LocalDateTime ldt = start;
         slots.add(doubleChecker(start, list));
 
-        while (slots.get(slots.size() - 1).plusMinutes(121).isBefore(stop.plusMinutes(1))) {
+        while (slots.get(slots.size() - 1).plusMinutes(120).isBefore(stop.plusMinutes(1))) {
 
             ldt = doubleChecker(slots.get(slots.size() - 1), list);
             if (ldt == slots.get(slots.size() - 1)) {
@@ -197,7 +196,7 @@ public class VisitService {
         return slots;
     }
 
-    public static LocalDateTime doubleChecker(LocalDateTime start, List<LocalDateTime> list) {
+    public LocalDateTime doubleChecker(LocalDateTime start, List<LocalDateTime> list) {
         LocalDateTime slot = start;
         Collections.sort(list);
         for (LocalDateTime t : list) {
@@ -208,7 +207,7 @@ public class VisitService {
         return slot;
     }
 
-    public static List<CheckDto> sort(List<CheckDto> list) {
+    public List<CheckDto> sort(List<CheckDto> list) {
         Comparator<CheckDto> mapComparator = Comparator.comparing(CheckDto::getData);
         Collections.sort(list, mapComparator);
         return list;
@@ -239,14 +238,11 @@ public class VisitService {
 
     public ConfirmResponse deleteByToken(String token) {
         Visit visit = visitRepository.findByToken(token).orElseThrow(() -> new TokenNotFoundException("TOKEN_NOT_FOUND"));
-
             visitRepository.delete(visit);
-
-
         return new ConfirmResponse("VISIT_CANCELED");
     }
 
-    public static List<LocalDateTime> getLocalDateTimeFromList(Doctor doctor) {
+    public List<LocalDateTime> getLocalDateTimeFromList(Doctor doctor) {
         return doctor.getVisits().stream().map(s -> s.getData()).collect(Collectors.toList());
     }
 

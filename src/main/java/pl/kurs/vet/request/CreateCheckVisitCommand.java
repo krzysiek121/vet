@@ -25,8 +25,8 @@ public class CreateCheckVisitCommand {
     private String animal;
     @NotEmpty(message = "DATE_FROM_NOT_EMPTY")
     @CheckDate
-    private String date_from;
+    private String from;
     @NotEmpty(message = "DATE_TO_NOT_EMPTY")
     @CheckDate
-    private String date_to;
+    private String to;
 }

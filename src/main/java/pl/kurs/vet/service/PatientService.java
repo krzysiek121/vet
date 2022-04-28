@@ -37,7 +37,7 @@ public class PatientService {
         return patientRepository.saveAndFlush(toSave);
     }
     @Transactional(readOnly = true)
-    //@Lock(LockModeType.PESSIMISTIC_READ)
+    @Lock(LockModeType.PESSIMISTIC_READ)
     public Patient findPatientById(int id) {
         return patientRepository.findById(id).get();
     }

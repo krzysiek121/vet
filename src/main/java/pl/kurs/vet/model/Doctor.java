@@ -45,6 +45,7 @@ public class Doctor {
         this.animalType = animalType;
         this.salary = salary;
         this.nip = nip;
+
     }
 }
 
