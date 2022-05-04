@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = CheckDateValidator.class)
 public @interface CheckDate {
-    String message() default "DOCTOR_ID_NOT_FOUND";
+    String message() default "WRONG_DATE";
 
     Class<?>[] groups() default {};
 

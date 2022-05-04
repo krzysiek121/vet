@@ -1,8 +1,7 @@
 package pl.kurs.vet.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
 
+import lombok.*;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +25,7 @@ public class Patient {
     private String email;
     @Version
     private long version;
+    @ToString.Exclude
     @OneToMany(mappedBy = "patient", cascade = {CascadeType.ALL})
     private Set<Visit> visits = new HashSet<>();
 

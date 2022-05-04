@@ -1,11 +1,8 @@
 package pl.kurs.vet.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.modelmapper.ModelMapper;
-import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,26 +10,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.vet.VetApplication;
 import pl.kurs.vet.model.Doctor;
 import pl.kurs.vet.model.dto.DoctorDtoGet;
-import pl.kurs.vet.repository.DoctorReposirtory;
-import pl.kurs.vet.service.DoctorService;
+import pl.kurs.vet.repository.DoctorRepository;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
-
-import static net.bytebuddy.matcher.ElementMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.http.RequestEntity.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
@@ -40,11 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(
         locations = "classpath:application-integrationtest.properties")
 @AutoConfigureMockMvc
-@Transactional
+//@Transactional
 class DoctorControllerTest {
-
-    @Autowired
-    private ModelMapper modelMapper;
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,18 +36,15 @@ class DoctorControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private DoctorReposirtory doctorReposirtory;
-
-    @Autowired
-    private DoctorService doctorService;
+    private DoctorRepository doctorRepository;
 
     @Test
     public void shouldCreateDoctor() throws Exception {
 
-        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
+        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 11, "xxx");
 
 
-        doctorReposirtory.saveAndFlush(l1);
+        doctorRepository.saveAndFlush(l1);
 
 //
         mockMvc.perform(MockMvcRequestBuilders
@@ -75,10 +55,9 @@ class DoctorControllerTest {
                 .andExpect(jsonPath("$.surname").value("xx"))
                 .andExpect(jsonPath("$.type").value("kardiolog"))
                 .andExpect(jsonPath("$.animalType").value("kot"))
-                .andExpect(jsonPath("$.salary").value(000))
+                .andExpect(jsonPath("$.salary").value(11))
                 .andExpect(jsonPath("$.nip").value("xxx"));
-        //String str = result.getResponse().getContentAsString();
-        //assertTrue(str.contains("\"name\":\"Andrzej\""));
+
     }
     public void addDoctorsToDatabase() {
 
@@ -86,35 +65,38 @@ class DoctorControllerTest {
     @Test
     public void createDoctorSecoundTest() throws Exception {
 
-        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
+        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
         //String json = objectMapper.writeValueAsString(l1);
+        DoctorDtoGet l2 = new DoctorDtoGet("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
+        doctorRepository.saveAndFlush(l1);
 
-        doctorReposirtory.saveAndFlush(l1);
-//
         mockMvc.perform(MockMvcRequestBuilders
                 .get("http://localhost:8080/doctor/{id}", l1.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers
                         .content()
-                        .json(objectMapper.writeValueAsString(l1))
+                        .json(objectMapper.writeValueAsString(l2))
                 );
 
     }
     @Test
     public void shouldGetAddedDoctors() throws Exception {
 
-        String obj1= "[{\"name\":\"Andrzej\",\"surname\":\"xx\",\"type\":\"kardiolog\",\"animalType\":\"kot\",\"salary\":0,\"nip\":\"xxx\"},{\"name\":\"Darek\",\"surname\":\"xx\",\"type\":\"kardiolog\",\"animalType\":\"pies\",\"salary\":0,\"nip\":\"xxxx\"},{\"name\":\"Mariusz\",\"surname\":\"xx\",\"type\":\"kardiolog\",\"animalType\":\"kot\",\"salary\":0,\"nip\":\"xxx1\"}]";
+        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
+        Doctor l2 = new Doctor("Darek", "xx", "kardiolog", "pies", 2, "xxxx");
+        Doctor l3 = new Doctor("Mariusz", "xx", "kardiolog", "kot", 2, "xxx1");
 
-        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
-        Doctor l2 = new Doctor("Darek", "xx", "kardiolog", "pies", 000, "xxxx");
-        Doctor l3 = new Doctor("Mariusz", "xx", "kardiolog", "kot", 000, "xxx1");
+        doctorRepository.saveAndFlush(l1);
+        doctorRepository.saveAndFlush(l2);
+        doctorRepository.saveAndFlush(l3);
 
-        doctorReposirtory.saveAndFlush(l1);
-        doctorReposirtory.saveAndFlush(l2);
-        doctorReposirtory.saveAndFlush(l3);
+        DoctorDtoGet l4 = new DoctorDtoGet("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
+        DoctorDtoGet l5 = new DoctorDtoGet("Darek", "xx", "kardiolog", "pies", 2, "xxxx");
+        DoctorDtoGet l6 = new DoctorDtoGet("Mariusz", "xx", "kardiolog", "kot", 2, "xxx1");
 
-        List<Doctor> doctors2 = Arrays.asList(l1,l2,l3);
+
+        List<DoctorDtoGet> doctors2 = Arrays.asList(l4,l5,l6);
         System.out.println(objectMapper.writeValueAsString(doctors2));
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -131,17 +113,20 @@ class DoctorControllerTest {
     @Test
     public void shouldGetAddedDoctorsAndReturnListSize() throws Exception {
 
-        String obj1= "[{\"name\":\"Andrzej\",\"surname\":\"xx\",\"type\":\"kardiolog\",\"animalType\":\"kot\",\"salary\":0,\"nip\":\"xxx\"},{\"name\":\"Darek\",\"surname\":\"xx\",\"type\":\"kardiolog\",\"animalType\":\"pies\",\"salary\":0,\"nip\":\"xxxx\"},{\"name\":\"Mariusz\",\"surname\":\"xx\",\"type\":\"kardiolog\",\"animalType\":\"kot\",\"salary\":0,\"nip\":\"xxx1\"}]";
+        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
+        Doctor l2 = new Doctor("Darek", "xx", "kardiolog", "pies", 2, "xxxx");
+        Doctor l3 = new Doctor("Mariusz", "xx", "kardiolog", "kot", 2, "xxx1");
 
-        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
-        Doctor l2 = new Doctor("Darek", "xx", "kardiolog", "pies", 000, "xxxx");
-        Doctor l3 = new Doctor("Mariusz", "xx", "kardiolog", "kot", 000, "xxx1");
+        doctorRepository.saveAndFlush(l1);
+        doctorRepository.saveAndFlush(l2);
+        doctorRepository.saveAndFlush(l3);
 
-        doctorReposirtory.saveAndFlush(l1);
-        doctorReposirtory.saveAndFlush(l2);
-        doctorReposirtory.saveAndFlush(l3);
+        DoctorDtoGet l4 = new DoctorDtoGet("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
+        DoctorDtoGet l5 = new DoctorDtoGet("Darek", "xx", "kardiolog", "pies", 2, "xxxx");
+        DoctorDtoGet l6 = new DoctorDtoGet("Mariusz", "xx", "kardiolog", "kot", 2, "xxx1");
 
-        List<Doctor> doctors2 = Arrays.asList(l1,l2,l3);
+
+        List<DoctorDtoGet> doctors2 = Arrays.asList(l4,l5,l6);
         System.out.println(objectMapper.writeValueAsString(doctors2));
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -156,7 +141,7 @@ class DoctorControllerTest {
     @Test
     public void shouldGetCorrectStatusAfterAddDoctor() throws Exception {
 
-        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
+        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
 
         mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8080/doctor/")
                 .content(objectMapper.writeValueAsString(l1))
@@ -168,11 +153,11 @@ class DoctorControllerTest {
     @Test
     public void shouldFireDoctor() throws Exception {
 
-        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
+        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
 
         String message = "changed status of given doctor, this doctor will not be able to handle any visits";
 
-        doctorReposirtory.saveAndFlush(l1);
+        doctorRepository.saveAndFlush(l1);
 
         mockMvc.perform(MockMvcRequestBuilders.put("http://localhost:8080/doctor/{id}/fire", l1.getId())
                 .accept(MediaType.ALL))

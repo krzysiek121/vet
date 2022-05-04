@@ -10,19 +10,18 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.vet.exception.DoctorNotFoundException;
 import pl.kurs.vet.exception.DoctorNotWorkingException;
 import pl.kurs.vet.model.Doctor;
-import pl.kurs.vet.repository.DoctorReposirtory;
+import pl.kurs.vet.repository.DoctorRepository;
 import pl.kurs.vet.request.CreateDoctorCommand;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.LockModeType;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class DoctorService {
-    private final DoctorReposirtory doctorReposirtory;
-
+    private final DoctorRepository doctorRepository;
 
     //@PostConstruct
     public void init() {
@@ -37,7 +36,7 @@ public class DoctorService {
         Doctor l9 = new Doctor("Staszek", "xx", "urolog", "kot", 000, "xxx32");
         Doctor l10 = new Doctor("Tomasz", "xx", "laryngolog", "pies", 000, "xxx31");
         Doctor l11 = new Doctor("Marcin", "xx", "laryngolog", "kot", 000, "xxx54");
-        doctorReposirtory.saveAndFlush(l1);
+       // doctorRepository.saveAndFlush(l1);
         //doctorReposirtory.saveAndFlush(l2);
         //doctorReposirtory.saveAndFlush(l3);
        // doctorReposirtory.saveAndFlush(l4);
@@ -52,32 +51,28 @@ public class DoctorService {
 
 
     }
-
+    @Transactional
     public Doctor save(CreateDoctorCommand command) {
         Doctor toSave = new Doctor(command.getName(), command.getSurname(), command.getType(), command.getAnimalType(), command.getSalary(), command.getNip());
-        return doctorReposirtory.saveAndFlush(toSave);
+        return doctorRepository.saveAndFlush(toSave);
     }
 
     @Transactional(readOnly = true)
-    @Lock(LockModeType.PESSIMISTIC_READ)
     public Doctor findDoctorById(int id) {
-        return doctorReposirtory.findById(id).orElseThrow(() -> new DoctorNotFoundException(id));
+        return doctorRepository.findById(id).orElseThrow(() -> new DoctorNotFoundException(id));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Doctor> findAllDoctors() {
-        return doctorReposirtory.findAll();
+        return doctorRepository.findAll();
     }
-
+    @Transactional(readOnly = true)
     public List<Doctor> doctorListWithPagination(int page, int size) {
 
-        List<Doctor> doctors = new ArrayList<Doctor>();
         Pageable paging = PageRequest.of(page, size);
 
-        Page<Doctor> pageTuts = doctorReposirtory.findAll(paging);
-        doctors = pageTuts.getContent();
-
-        return doctors;
+        Page<Doctor> pageTuts = doctorRepository.findAll(paging);
+        return pageTuts.getContent();
     }
 
     @Transactional

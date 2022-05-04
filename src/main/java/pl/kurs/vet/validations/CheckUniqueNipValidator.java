@@ -1,17 +1,17 @@
 package pl.kurs.vet.validations;
 
 import lombok.RequiredArgsConstructor;
-import pl.kurs.vet.repository.DoctorReposirtory;
+import pl.kurs.vet.repository.DoctorRepository;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 @RequiredArgsConstructor
-public class CheckUniqueNipValidator implements ConstraintValidator<CheckUniqueNip, Integer> {
+public class CheckUniqueNipValidator implements ConstraintValidator<CheckUniqueNip, String> {
 
-    private final DoctorReposirtory doctorReposirtory;
+    private final DoctorRepository doctorRepository;
 
     @Override
-    public boolean isValid(Integer integer, ConstraintValidatorContext constraintValidatorContext) {
-        return doctorReposirtory.existsByNip(integer);
+    public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
+        return !doctorRepository.existsByNip(s);
     }
 }

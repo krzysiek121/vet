@@ -1,8 +1,7 @@
 package pl.kurs.vet.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-
+import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -11,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Transactional
 public class Visit {
 
     @Id

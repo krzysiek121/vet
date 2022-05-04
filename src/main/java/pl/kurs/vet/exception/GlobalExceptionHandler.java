@@ -50,14 +50,11 @@ public class GlobalExceptionHandler {
         String shortEntityName = exc.getEntityName().substring(exc.getEntityName().lastIndexOf('.') + 1);
         return ResponseEntity.badRequest().body(new OptimisticLockDto(shortEntityName, (Integer) exc.getIdentifier()));
     }
-    @ExceptionHandler(TokenNotFoundException.class)
-    public ResponseEntity handleTokenNotFoundException(TokenNotFoundException exc) {
+    @ExceptionHandler({TokenNotFoundException.class, DateWrongException.class, NoEmptySlotsException.class})
+    public ResponseEntity handleTokenNotFoundException(Exception exc) {
         return new ResponseEntity(new ErrorDto(exc.getMessage()),HttpStatus.NOT_FOUND);
     }
-    @ExceptionHandler(DateWrongException.class)
-    public ResponseEntity handleDateWrongException(DateWrongException exc) {
-        return new ResponseEntity(new ErrorDto(exc.getMessage()),HttpStatus.NOT_FOUND);
-    }
+
     @ExceptionHandler(DoctorNotWorkingException.class)
     public ResponseEntity handleDoctorNotWorkingException(DoctorNotWorkingException exc) {
         return new ResponseEntity(new ErrorDto(exc.getMessage()),HttpStatus.BAD_REQUEST);

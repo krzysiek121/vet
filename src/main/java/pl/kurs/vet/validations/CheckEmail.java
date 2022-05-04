@@ -9,10 +9,10 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = CheckDoctorIdValidator.class)
-public @interface CheckDoctorId {
+@Constraint(validatedBy = CheckDateValidator.class)
+public @interface CheckEmail {
 
-    String message() default "DOCTOR_ID_NOT_FOUND";
+    String message() default "EMAIL_NOT_UNIQUE";
 
     Class<?>[] groups() default {};
 

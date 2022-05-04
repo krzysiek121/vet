@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet author="krzysiek" id="20220428_001_krzysiek">
+        <createTable tableName="doctor">
+
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="surname" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="animal_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="salary" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nip" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_working" type="boolean">
+            </column>
+            <column name="version" type="long">
+            </column>
+        </createTable>
+
+        <createTable tableName="patient">
+
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="name_of_animal" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="species" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="race" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="age" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owner_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owner_surname" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="long">
+            </column>
+
+        </createTable>
+
+        <createTable tableName="visit">
+
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="doctor_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="patient_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="token" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_confirmed" type="boolean">
+            </column>
+            <column name="time_send_confirmation" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="long">
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="visit" baseColumnNames="doctor_id"
+                                 constraintName="FK_VISIT_DOCTOR" referencedTableName="doctor"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="visit" baseColumnNames="patient_id"
+                                 constraintName="FK_VISIT_PATIENT" referencedTableName="patient"
+                                 referencedColumnNames="id"/>
+
+    </changeSet>
+
+
+</databaseChangeLog>

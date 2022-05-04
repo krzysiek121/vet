@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pl.kurs.vet.validations.CheckSalary;
+import org.hibernate.validator.constraints.Range;
 import pl.kurs.vet.validations.CheckUniqueNip;
 
 import javax.validation.constraints.NotEmpty;
@@ -25,7 +25,7 @@ public class CreateDoctorCommand {
     @NotEmpty(message = "ANIMAL_NOT_EMPTY")
     private String animalType;
     @NotNull(message = "SALARY_NOT_EMPTY")
-    @CheckSalary
+    @Range( min = 1 )
     private Integer salary;
     @NotEmpty(message = "NIP_NOT_EMPTY")
     @CheckUniqueNip

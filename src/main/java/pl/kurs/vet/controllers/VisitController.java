@@ -12,19 +12,19 @@ import pl.kurs.vet.response.ConfirmResponse;
 import pl.kurs.vet.response.VisitSaveResponse;
 import pl.kurs.vet.service.VisitService;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/visit/")
 @RequiredArgsConstructor
-@Scope("singleton")
 public class VisitController {
 
     private final VisitService visitService;
 
     @PostMapping
-    public ResponseEntity<VisitSaveResponse> save(@RequestBody @Valid CreateVisitCommand visitCommand) {
+    public ResponseEntity<VisitSaveResponse> save(@RequestBody @Valid CreateVisitCommand visitCommand) throws MessagingException {
         return new ResponseEntity<VisitSaveResponse>(visitService.save(visitCommand), HttpStatus.CREATED);
     }
 

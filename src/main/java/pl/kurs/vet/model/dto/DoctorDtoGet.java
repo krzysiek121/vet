@@ -2,7 +2,6 @@ package pl.kurs.vet.model.dto;
 
 import lombok.*;
 
-//{"name": "xx", "surname": "xx", "type": "xxx", "animalType": "yyy", "salary": 000, "nip": "xxx"}
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

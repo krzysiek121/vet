@@ -1,21 +1,21 @@
 package pl.kurs.vet.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.hibernate.validator.constraints.UniqueElements;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
-@ToString(exclude = {"visits"})
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
 @EqualsAndHashCode(exclude = {"visits"})
+@Transactional
 public class Doctor {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -34,6 +34,7 @@ public class Doctor {
     private boolean isWorking = true;
     @Version
     private long version;
+    @ToString.Exclude
     @OneToMany(mappedBy = "doctor", cascade = {CascadeType.ALL})
     private Set<Visit> visits = new HashSet<>();
 

@@ -6,12 +6,12 @@ import pl.kurs.vet.repository.PatientRepository;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 @RequiredArgsConstructor
-public class CheckPatientIdValidator implements ConstraintValidator<CheckPatientId, Integer> {
+public class CheckEmailValidator implements ConstraintValidator<CheckEmail, String> {
 
     private final PatientRepository patientRepository;
 
     @Override
-    public boolean isValid(Integer integer, ConstraintValidatorContext constraintValidatorContext) {
-        return patientRepository.existsById(integer);
+    public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
+        return !patientRepository.existsByEmail(s);
     }
 }
