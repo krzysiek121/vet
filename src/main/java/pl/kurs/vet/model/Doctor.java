@@ -19,17 +19,11 @@ public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @NotEmpty(message = "NAME_NOT_EMPTY")
     private String name;
-    @NotEmpty(message = "SURNAME_NOT_EMPTY")
     private String surname;
-    @NotEmpty(message = "TYPE_NOT_EMPTY")
     private String type;
-    @NotEmpty(message = "ANIMAL_NOT_EMPTY")
     private String animalType;
-    @NotNull(message = "SALARY_NOT_EMPTY")
     private Integer salary;
-    @NotEmpty(message = "NIP_NOT_EMPTY")
     private String nip;
     private boolean isWorking = true;
     @Version
@@ -39,7 +33,7 @@ public class Doctor {
     private Set<Visit> visits = new HashSet<>();
 
 
-    public Doctor(@NotEmpty(message = "NAME_NOT_EMPTY") String name, @NotEmpty(message = "SURNAME_NOT_EMPTY") String surname, @NotEmpty(message = "TYPE_NOT_EMPTY") String type, @NotEmpty(message = "ANIMAL_NOT_EMPTY") String animalType, @NotEmpty(message = "SALARY_NOT_EMPTY") Integer salary, @NotEmpty(message = "NIP_NOT_EMPTY") String nip) {
+    public Doctor(String name,String surname,String type, String animalType, Integer salary,String nip) {
         this.name = name;
         this.surname = surname;
         this.type = type;

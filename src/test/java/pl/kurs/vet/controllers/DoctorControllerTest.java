@@ -12,13 +12,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import pl.kurs.vet.VetApplication;
+import pl.kurs.vet.exception.NoEmptySlotsException;
 import pl.kurs.vet.model.Doctor;
 import pl.kurs.vet.model.dto.DoctorDtoGet;
 import pl.kurs.vet.repository.DoctorRepository;
+import pl.kurs.vet.request.CreateCheckVisitCommand;
+import pl.kurs.vet.request.CreateDoctorCommand;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
@@ -26,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(
         locations = "classpath:application-integrationtest.properties")
 @AutoConfigureMockMvc
-//@Transactional
 class DoctorControllerTest {
 
     @Autowired
@@ -39,14 +44,14 @@ class DoctorControllerTest {
     private DoctorRepository doctorRepository;
 
     @Test
-    public void shouldCreateDoctor() throws Exception {
+    public void shouldGetDoctor() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 11, "xxx");
 
 
         doctorRepository.saveAndFlush(l1);
 
-//
+
         mockMvc.perform(MockMvcRequestBuilders
                 .get("http://localhost:8080/doctor/{id}", l1.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -59,9 +64,7 @@ class DoctorControllerTest {
                 .andExpect(jsonPath("$.nip").value("xxx"));
 
     }
-    public void addDoctorsToDatabase() {
 
-    }
     @Test
     public void createDoctorSecoundTest() throws Exception {
 
@@ -165,6 +168,30 @@ class DoctorControllerTest {
                 .andExpect(MockMvcResultMatchers
                         .content()
                         .string(message));
+
+
+
+
+    }
+
+    @Test
+    public void shouldReturnNotUniqueNipException() throws Exception {
+
+        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
+
+        doctorRepository.save(l1);
+
+        CreateDoctorCommand l2 = new CreateDoctorCommand("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8080/doctor/")
+                .content(objectMapper.writeValueAsString(l2))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.[0].field").value("nip"))
+                .andExpect(jsonPath("$.[0].message").value("NIP_NOT_UNIQUE"))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
+                .andReturn();
 
 
 

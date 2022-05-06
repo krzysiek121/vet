@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 
-//imie zwierzecia, gatunek, rase, wiek, imie i nazwisko wlasciciela, email.
 public class PatientDtoGet {
 
     private String nameOfAnimal;

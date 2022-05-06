@@ -7,11 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.kurs.vet.repository.DoctorRepository;
 import pl.kurs.vet.repository.PatientRepository;
-import pl.kurs.vet.validations.CheckDate;
 import pl.kurs.vet.validations.CheckId;
 
 import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 

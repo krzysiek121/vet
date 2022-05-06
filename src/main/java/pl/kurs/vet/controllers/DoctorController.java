@@ -6,10 +6,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.kurs.vet.model.dto.DoctorDtoGet;
 import pl.kurs.vet.request.CreateDoctorCommand;
 import pl.kurs.vet.service.DoctorService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ public class DoctorController {
 
     private final DoctorService doctorService;
     private final ModelMapper modelMapper;
+
 
     @PostMapping
     public ResponseEntity<DoctorDtoGet> saveDoctor(@RequestBody @Valid CreateDoctorCommand command) {

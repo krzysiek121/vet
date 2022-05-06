@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.time.format.DateTimeParseException;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -54,11 +56,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity handleTokenNotFoundException(Exception exc) {
         return new ResponseEntity(new ErrorDto(exc.getMessage()),HttpStatus.NOT_FOUND);
     }
-
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity handleDateTimeParseException(Exception exc) {
+        return ResponseEntity.badRequest().body(new ErrorDto("WRONG_INPUT_DATE_FORMAT"));
+    }
     @ExceptionHandler(DoctorNotWorkingException.class)
     public ResponseEntity handleDoctorNotWorkingException(DoctorNotWorkingException exc) {
         return new ResponseEntity(new ErrorDto(exc.getMessage()),HttpStatus.BAD_REQUEST);
     }
+
     @Value
     @Builder
     static class ErrorDto {

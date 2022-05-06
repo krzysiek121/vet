@@ -6,10 +6,8 @@ import pl.kurs.vet.request.CreateCheckVisitCommand;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import javax.validation.constraints.AssertTrue;
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-@Component
+
 public class CheckDatesValidation implements ConstraintValidator<CheckDates, CreateCheckVisitCommand> {
 
 
@@ -20,10 +18,13 @@ public class CheckDatesValidation implements ConstraintValidator<CheckDates, Cre
 
     @Override
     public boolean isValid(final CreateCheckVisitCommand visitCommand,final ConstraintValidatorContext constraintValidatorContext) {
-        System.out.println("walidacja");
+
         LocalDateTime start = visitCommand.getFrom();
         LocalDateTime stop = visitCommand.getTo();
-        System.out.println(start.isBefore(stop));
+
+        constraintValidatorContext.buildConstraintViolationWithTemplate("CHECK_INPUT_DATE_TO")
+                .addPropertyNode("to")
+                .addConstraintViolation();
         return start.isBefore(stop);
 
     }

@@ -15,6 +15,7 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Visit> findByToken(String token);
+    void deleteById(int id);
 
 
 }

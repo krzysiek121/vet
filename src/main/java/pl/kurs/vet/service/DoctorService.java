@@ -19,11 +19,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class DoctorService {
     private final DoctorRepository doctorRepository;
 
     //@PostConstruct
+    @Transactional
     public void init() {
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
         Doctor l2 = new Doctor("Darek", "xx", "kardiolog", "pies", 000, "xxxx");

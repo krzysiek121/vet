@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = CheckDateValidator.class)
+@Constraint(validatedBy = CheckEmailValidator.class)
 public @interface CheckEmail {
 
     String message() default "EMAIL_NOT_UNIQUE";

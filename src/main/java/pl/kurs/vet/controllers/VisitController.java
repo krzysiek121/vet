@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.kurs.vet.model.dto.CheckDto;
 import pl.kurs.vet.request.CreateCheckVisitCommand;
 import pl.kurs.vet.request.CreateVisitCommand;
@@ -13,6 +14,7 @@ import pl.kurs.vet.response.VisitSaveResponse;
 import pl.kurs.vet.service.VisitService;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -24,8 +26,8 @@ public class VisitController {
     private final VisitService visitService;
 
     @PostMapping
-    public ResponseEntity<VisitSaveResponse> save(@RequestBody @Valid CreateVisitCommand visitCommand) throws MessagingException {
-        return new ResponseEntity<VisitSaveResponse>(visitService.save(visitCommand), HttpStatus.CREATED);
+    public ResponseEntity<VisitSaveResponse> save(@RequestBody @Valid CreateVisitCommand visitCommand, HttpServletRequest request) throws MessagingException {
+        return new ResponseEntity<VisitSaveResponse>(visitService.save(visitCommand, request), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/confirm/{token}")
@@ -43,5 +45,6 @@ public class VisitController {
     public ResponseEntity<ConfirmResponse> deleteVisit(@PathVariable(value = "token") String token) {
         return new ResponseEntity<ConfirmResponse>(visitService.deleteByToken(token), HttpStatus.OK);
     }
+
 
 }

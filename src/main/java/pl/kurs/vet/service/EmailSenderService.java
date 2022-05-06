@@ -9,12 +9,9 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import pl.kurs.vet.model.EMail;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,20 +34,19 @@ public class EmailSenderService {
         String html = templateEngine.process(email.getTemplate(), context);
         helper.setText(html, true);
 
-        log.info("Sending email: {} with html body: {}", email, html);
         emailSender.send(message);
     }
     @Async
-    public void sendConfirmationToEmail(String PatientEmail, String data, String token, String name) throws MessagingException {
+    public void sendConfirmationToEmail(String PatientEmail, String data, String name, String link) throws MessagingException {
         EMail email = new EMail();
         email.setTo(PatientEmail);
         email.setFrom("awandaliak@gmail.com");
-        email.setSubject("Welcome Email from CodingNConcepts");
+        email.setSubject("Confirmation email from VetClinic");
         email.setTemplate("welcome-email.html");
         Map<String, Object> properties = new HashMap<>();
         properties.put("name", name);
-        properties.put("subscriptionDate", data);
-        properties.put("technologies", Arrays.asList("Python", "Go", "C#"));
+        properties.put("bookdate", data);
+        properties.put("link", link);
         email.setProperties(properties);
 
         sendHtmlMessage(email);

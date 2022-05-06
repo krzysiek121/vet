@@ -1,6 +1,7 @@
 package pl.kurs.vet.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.jni.Local;
 import org.modelmapper.ModelMapper;
 import org.springframework.mail.SimpleMailMessage;
@@ -8,6 +9,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import pl.kurs.vet.controllers.VisitController;
 import pl.kurs.vet.exception.DateWrongException;
 import pl.kurs.vet.exception.NoEmptySlotsException;
 import pl.kurs.vet.exception.TimeVisitException;
@@ -29,6 +37,9 @@ import pl.kurs.vet.response.VisitSaveResponse;
 
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -53,7 +64,9 @@ public class VisitService {
     private final EmailSenderService emailSenderService;
 
 
-    @PostConstruct
+
+    //@PostConstruct
+    //@Transactional
     public void init() {
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
         Patient p1 = new Patient("xx", "xx", "xxx", 11, "xx", "xxx", "wardawa.post@gmail.com");
@@ -69,14 +82,20 @@ public class VisitService {
             slots.add(slots.get(slots.size() - 1).plusHours(1));
 
         }
+
+        //System.out.println(visitRepository.getById(172));
+        //System.out.println(visitRepository.getById(189));
         visitRepository.deleteById(172);
         visitRepository.deleteById(189);
+
+
+
 
     }
 
 
     @Transactional
-    public VisitSaveResponse save(CreateVisitCommand command) throws MessagingException {
+    public VisitSaveResponse save(CreateVisitCommand command, HttpServletRequest request) throws MessagingException {
         Doctor doctor = doctorService.findDoctorById(command.getDoctorId());
         Patient patient = patientService.findPatientById(command.getPatientId());
 
@@ -91,9 +110,15 @@ public class VisitService {
 
         Visit toSave = new Visit(doctor, patient, command.getDate(), generateNewToken(), LocalDateTime.now());
 
+
+        String baseUrl = getBaseUrl(request);
+        String confirmationLink = baseUrl+"/confirm/"+toSave.getToken();
+
         visitRepository.saveAndFlush(toSave);
-        emailSenderService.sendConfirmationToEmail(patient.getEmail(), command.getDate().toString(),
-                toSave.getToken(), toSave.getPatient().getOwnerName());
+        emailSenderService.sendConfirmationToEmail(patient.getEmail(), command.getDate().toString()
+                , toSave.getPatient().getOwnerName(), confirmationLink);
+
+
 
         return new VisitSaveResponse(toSave.getId());
     }
@@ -111,6 +136,7 @@ public class VisitService {
         } else {
             throw new TooLateConfirmException("TOO_LATE_TO_CONFIRM");
         }
+
 
     }
 
@@ -142,16 +168,9 @@ public class VisitService {
     }
 
 
-    public static Set<LocalDateTime> getLocalDateTimesFromVisits(Set<Visit> list) {
-        Set<LocalDateTime> listOfVisits = new TreeSet<>();
-        for (Visit v : list) {
-            listOfVisits.add(v.getData());
-        }
-        return listOfVisits;
-    }
-
     @Transactional
     public List<CheckDto> check(CreateCheckVisitCommand visitCommand) {
+        System.out.println("check");
         LocalDateTime start = visitCommand.getFrom();
         LocalDateTime stop = visitCommand.getTo();
 
@@ -181,9 +200,9 @@ public class VisitService {
 
 
         }
-         if(list.isEmpty() || list == null) {
-             throw new NoEmptySlotsException("NO_EMPTY_SLOTS_IN_TIME_RANGE_CHANGE_TIME");
-         }
+        if (list.isEmpty() || list == null) {
+            throw new NoEmptySlotsException("NO_EMPTY_SLOTS_IN_TIME_RANGE_CHANGE_TIME");
+        }
         return sort(list);
     }
 
@@ -212,7 +231,7 @@ public class VisitService {
         LocalDateTime ldt = start;
 
         slots.add(doubleChecker(start, doctorVisitList));
-        if(slots.get(slots.size()-1).plusMinutes(60).isAfter(stop)){
+        if (slots.get(slots.size() - 1).plusMinutes(60).isAfter(stop)) {
             return list2;
         }
         list2.add(new CheckDto(modelMapper.map(doctor, DoctorDtoCheck.class), slots.get(slots.size() - 1).toString().replace('T', ' ')));
@@ -233,11 +252,6 @@ public class VisitService {
         return list2;
     }
 
-    public boolean timeSlotLimit(LocalDateTime lastSlot, LocalDateTime stop) {
-        System.out.println(lastSlot);
-        System.out.println(stop);
-        return lastSlot.plusMinutes(120).isBefore(stop.plusMinutes(1));
-    }
 
     public LocalDateTime doubleChecker(LocalDateTime start, List<LocalDateTime> list) {
 
@@ -265,8 +279,7 @@ public class VisitService {
         return date.isAfter(compareToDate) || date.isEqual(compareToDate);
     }
 
-
-
+    @Transactional
     public ConfirmResponse deleteByToken(String token) {
         Visit visit = visitRepository.findByToken(token).orElseThrow(() -> new TokenNotFoundException("TOKEN_NOT_FOUND"));
         visitRepository.delete(visit);
@@ -276,5 +289,15 @@ public class VisitService {
     public List<LocalDateTime> getLocalDateTimeFromList(Doctor doctor) {
         return doctor.getVisits().stream().map(s -> s.getData()).collect(Collectors.toList());
     }
+    public String getBaseUrl(HttpServletRequest request) {
+        String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
+                .replacePath(null)
+                .build()
+                .toUriString();
+
+        return baseUrl;
+    }
+
 
 }
+

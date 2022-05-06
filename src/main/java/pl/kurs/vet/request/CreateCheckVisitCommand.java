@@ -5,9 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Check;
 import pl.kurs.vet.validations.CheckAnimalSupport;
-import pl.kurs.vet.validations.CheckDate;
 import pl.kurs.vet.validations.CheckDates;
 import pl.kurs.vet.validations.CheckDoctorTypeSupport;
 
