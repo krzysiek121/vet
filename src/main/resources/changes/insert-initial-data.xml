@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="0001" author="waldek">
+        <loadData catalogName="public"
+                encoding="UTF-8"
+                  file="csvs/appusers.csv"
+                  schemaName="public"
+                  quotchar="'"
+                  separator=","
+                  tableName="app_user"/>
+    </changeSet>
+
+    <changeSet id="0002" author="waldek">
+        <loadData catalogName="public"
+                encoding="UTF-8"
+                  file="csvs/approles.csv"
+                  schemaName="public"
+                  quotchar="'"
+                  separator=","
+                  tableName="app_role"/>
+
+    </changeSet>
+
+    <changeSet id="0003" author="waldek">
+        <loadData catalogName="public"
+                  encoding="UTF-8"
+                  file="csvs/userrole.csv"
+                  schemaName="public"
+                  quotchar="'"
+                  separator=","
+                  tableName="user_role"/>
+
+    </changeSet>
+
+</databaseChangeLog>

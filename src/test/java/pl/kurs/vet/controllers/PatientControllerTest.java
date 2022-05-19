@@ -12,9 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.kurs.vet.VetApplication;
-import pl.kurs.vet.model.Doctor;
 import pl.kurs.vet.model.Patient;
-import pl.kurs.vet.model.dto.DoctorDtoGet;
 import pl.kurs.vet.model.dto.PatientDtoGet;
 import pl.kurs.vet.repository.PatientRepository;
 import pl.kurs.vet.service.PatientService;
@@ -28,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = {VetApplication.class})
 @TestPropertySource(
-        locations = "classpath:application-integrationtest.properties")
+        locations = "classpath:src/test/resources/application-integrationtest.properties")
 @AutoConfigureMockMvc
 class PatientControllerTest {
 

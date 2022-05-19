@@ -110,6 +110,45 @@
                                  constraintName="FK_VISIT_PATIENT" referencedTableName="patient"
                                  referencedColumnNames="id"/>
 
+        <createTable tableName="app_user">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="app_role">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_role">
+            <column name="user_id" type="INT">
+                <constraints nullable="false" />
+            </column>
+            <column name="role_id" type="integer">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk_MtmInverse"
+                                 baseTableName="user_role" baseColumnNames="user_id"
+                                 referencedTableName="app_user" referencedColumnNames="id" />
+        <addForeignKeyConstraint constraintName="fk_tblMtmOwner"
+                                 baseTableName="user_role" baseColumnNames="role_id"
+                                 referencedTableName="app_role" referencedColumnNames="id" />
+
     </changeSet>
 
 

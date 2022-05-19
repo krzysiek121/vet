@@ -17,7 +17,7 @@ public class CheckDatesValidation implements ConstraintValidator<CheckDates, Cre
     }
 
     @Override
-    public boolean isValid(final CreateCheckVisitCommand visitCommand,final ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(final CreateCheckVisitCommand visitCommand, final ConstraintValidatorContext constraintValidatorContext) {
 
         LocalDateTime start = visitCommand.getFrom();
         LocalDateTime stop = visitCommand.getTo();
@@ -25,6 +25,7 @@ public class CheckDatesValidation implements ConstraintValidator<CheckDates, Cre
         constraintValidatorContext.buildConstraintViolationWithTemplate("CHECK_INPUT_DATE_TO")
                 .addPropertyNode("to")
                 .addConstraintViolation();
+
         return start.isBefore(stop);
 
     }

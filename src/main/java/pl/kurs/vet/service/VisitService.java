@@ -1,28 +1,15 @@
 package pl.kurs.vet.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.connector.Connector;
-import org.apache.tomcat.jni.Local;
 import org.modelmapper.ModelMapper;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.kurs.vet.controllers.VisitController;
-import pl.kurs.vet.exception.DateWrongException;
 import pl.kurs.vet.exception.NoEmptySlotsException;
 import pl.kurs.vet.exception.TimeVisitException;
 import pl.kurs.vet.exception.TokenNotFoundException;
 import pl.kurs.vet.exception.TooLateConfirmException;
 import pl.kurs.vet.model.Doctor;
-import pl.kurs.vet.model.EMail;
 import pl.kurs.vet.model.Patient;
 import pl.kurs.vet.model.Visit;
 import pl.kurs.vet.model.dto.CheckDto;
@@ -35,13 +22,9 @@ import pl.kurs.vet.request.CreateVisitCommand;
 import pl.kurs.vet.response.ConfirmResponse;
 import pl.kurs.vet.response.VisitSaveResponse;
 
-import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.SecureRandom;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -51,47 +34,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class VisitService {
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     private final VisitRepository visitRepository;
     private final DoctorRepository doctorRepository;
     private final PatientService patientService;
-    private final PatientRepository patientRepository;
     private final DoctorService doctorService;
-
     private final ModelMapper modelMapper;
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
     private final EmailSenderService emailSenderService;
-
-
-
-    //@PostConstruct
-    //@Transactional
-    public void init() {
-        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
-        Patient p1 = new Patient("xx", "xx", "xxx", 11, "xx", "xxx", "wardawa.post@gmail.com");
-
-        patientRepository.saveAndFlush(p1);
-        doctorRepository.saveAndFlush(l1);
-        LocalDateTime time = LocalDateTime.of(2022, 12, 10, 15, 00);
-        List<LocalDateTime> slots = new ArrayList<>();
-        slots.add(time);
-        for (int i = 0; i < 200; i++) {
-
-            visitRepository.saveAndFlush(new Visit(l1, p1, slots.get(slots.size() - 1).plusHours(1), "token", LocalDateTime.now()));
-            slots.add(slots.get(slots.size() - 1).plusHours(1));
-
-        }
-
-        //System.out.println(visitRepository.getById(172));
-        //System.out.println(visitRepository.getById(189));
-        visitRepository.deleteById(172);
-        visitRepository.deleteById(189);
-
-
-
-
-    }
 
 
     @Transactional
@@ -99,7 +50,6 @@ public class VisitService {
         Doctor doctor = doctorService.findDoctorById(command.getDoctorId());
         Patient patient = patientService.findPatientById(command.getPatientId());
 
-        //LocalDateTime timeOfVisit = LocalDateTime.parse(command.getDate(), formatter);
         LocalDateTime timeOfVisit = command.getDate();
         if (!checkOverlapping(timeOfVisit, doctor.getVisits())) {
             throw new TimeVisitException("DOCTOR_HAS_VISIT_THAT_DATE");
@@ -111,13 +61,11 @@ public class VisitService {
         Visit toSave = new Visit(doctor, patient, command.getDate(), generateNewToken(), LocalDateTime.now());
 
 
-        String baseUrl = getBaseUrl(request);
-        String confirmationLink = baseUrl+"/confirm/"+toSave.getToken();
+        String confirmationLink = getBaseUrl(request) + "/confirm/" + toSave.getToken();
 
         visitRepository.saveAndFlush(toSave);
         emailSenderService.sendConfirmationToEmail(patient.getEmail(), command.getDate().toString()
                 , toSave.getPatient().getOwnerName(), confirmationLink);
-
 
 
         return new VisitSaveResponse(toSave.getId());
@@ -170,13 +118,10 @@ public class VisitService {
 
     @Transactional
     public List<CheckDto> check(CreateCheckVisitCommand visitCommand) {
-        System.out.println("check");
+
         LocalDateTime start = visitCommand.getFrom();
         LocalDateTime stop = visitCommand.getTo();
 
-        if (start.isAfter(stop) || start.isEqual(stop)) {
-            throw new DateWrongException("WRONG_DATES_TYPED");
-        }
 
         List<Doctor> list = new ArrayList<>();
         for (Doctor d : doctorRepository.findByTypeAndAndAnimalType(visitCommand.getType(), visitCommand.getAnimal())) {
@@ -226,7 +171,7 @@ public class VisitService {
 
     public List<CheckDto> getListOfSlots(Doctor doctor, LocalDateTime start, LocalDateTime stop, ModelMapper modelMapper) {
         List<LocalDateTime> slots = new ArrayList<>();
-        List<LocalDateTime> doctorVisitList = getLocalDateTimeFromList(doctor);
+        List<LocalDateTime> doctorVisitList = getLocalDateTimeList(doctor);
         List<CheckDto> list2 = new ArrayList<>();
         LocalDateTime ldt = start;
 
@@ -266,11 +211,6 @@ public class VisitService {
         return slot;
     }
 
-    public List<CheckDto> sort(List<CheckDto> list) {
-        Comparator<CheckDto> mapComparator = Comparator.comparing(CheckDto::getData);
-        Collections.sort(list, mapComparator);
-        return list;
-    }
 
     private static boolean isAfterOrEqual(LocalDateTime date, LocalDateTime compareToDate) {
         if (date == null || compareToDate == null) {
@@ -286,9 +226,16 @@ public class VisitService {
         return new ConfirmResponse("VISIT_CANCELED");
     }
 
-    public List<LocalDateTime> getLocalDateTimeFromList(Doctor doctor) {
+    public List<LocalDateTime> getLocalDateTimeList(Doctor doctor) {
         return doctor.getVisits().stream().map(s -> s.getData()).collect(Collectors.toList());
     }
+
+    public List<CheckDto> sort(List<CheckDto> list) {
+        Comparator<CheckDto> mapComparator = Comparator.comparing(CheckDto::getData);
+        Collections.sort(list, mapComparator);
+        return list;
+    }
+
     public String getBaseUrl(HttpServletRequest request) {
         String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
                 .replacePath(null)

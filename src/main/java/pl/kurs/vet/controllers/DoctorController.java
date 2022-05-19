@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import pl.kurs.vet.model.Doctor;
 import pl.kurs.vet.model.dto.DoctorDtoGet;
 import pl.kurs.vet.request.CreateDoctorCommand;
 import pl.kurs.vet.service.DoctorService;
@@ -36,6 +37,10 @@ public class DoctorController {
     public ResponseEntity<DoctorDtoGet> getById(@PathVariable(value = "id") int id) {
         return new ResponseEntity<>(modelMapper.map(doctorService.findDoctorById(id), DoctorDtoGet.class), HttpStatus.OK);
     }
+    @GetMapping(value = "/exception/{id}")
+    public ResponseEntity<Doctor> getByIdException(@PathVariable(value = "id") int id) {
+        return new ResponseEntity<>(doctorService.findDoctorById(id), HttpStatus.OK);
+    }
 
     @GetMapping
     public ResponseEntity<List<DoctorDtoGet>> findBAllWithPagination(@RequestParam(defaultValue = "0") int page,
@@ -47,7 +52,8 @@ public class DoctorController {
 
     @PutMapping(value = "/{id}/fire")
     public ResponseEntity<String> softDelete(@PathVariable(value = "id") int id) {
-        return new ResponseEntity<>("changed status of given doctor, this doctor will not be able to handle any visits", HttpStatus.OK);
+        doctorService.softDelete(id);
+        return new ResponseEntity<>("CHANGED_DOCTOR_STATUS", HttpStatus.OK);
 
     }
 }

@@ -12,7 +12,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = CheckDatesValidation.class)
 public @interface CheckDates {
 
-    String message() default "bad dates";
+    String message() default "CHECK_INPUT_DATE_TO";
     Class<?>[] groups() default { };
     Class<? extends Payload>[] payload() default { };
 

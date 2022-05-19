@@ -1,12 +1,11 @@
 package pl.kurs.vet.controllers;
 
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.tomcat.jni.Local;
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,11 +48,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = {VetApplication.class})
 @TestPropertySource(
-        locations = "classpath:application-integrationtest.properties")
+        locations = "classpath:src/test/resources/application-integrationtest.properties")
 @AutoConfigureMockMvc
 @Transactional
 class VisitControllerTest {
 
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     @Autowired
     private MockMvc mockMvc;
 
@@ -68,6 +69,8 @@ class VisitControllerTest {
 
     @Autowired
     private VisitRepository visitRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Test
     public void shouldAddVisitAndReturnCorrectId() throws Exception {
@@ -359,7 +362,7 @@ class VisitControllerTest {
         slots.add(time);
         for (int i = 0; i < 200; i++) {
 
-            if (i + 1 == 172 || i + 1 == 189) {
+            if (i == 171 || i == 188) {
                 visitRepository.saveAndFlush(new Visit(l1, p1, slots.get(slots.size() - 1).plusHours(2), "token" + i, LocalDateTime.now()));
                 slots.add(slots.get(slots.size() - 1).plusHours(2));
             }
@@ -368,33 +371,38 @@ class VisitControllerTest {
 
 
         }
+        DoctorDtoCheck d1 = modelMapper.map(l1, DoctorDtoCheck.class);
 
-        DoctorDtoCheck d1 = new DoctorDtoCheck(1, "Andrzej xx");
         LocalDateTime start = LocalDateTime.of(2022, 12, 10, 18, 00);
         LocalDateTime stop = LocalDateTime.of(2022, 12, 18, 22, 00);
 
         CreateCheckVisitCommand c1 = new CreateCheckVisitCommand("kardiolog", "kot", start, stop);
 
-        CheckDto ch1 = new CheckDto(d1, "2022-12-17 19:00");
-        CheckDto ch2 = new CheckDto(d1, "2022-12-18 14:00");
 
-        List<CheckDto> visitsOptions = Arrays.asList(ch1, ch2);
+        //prawidłowe wolne sloty
+        //CheckDto ch1 = new CheckDto(d1, "2022-12-17 19:00");
+        //CheckDto ch2 = new CheckDto(d1, "2022-12-18 14:00");
 
-        mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8080/visit/check/")
+
+        MvcResult result2 = mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8080/visit/check/")
                 .content(objectMapper.writeValueAsString(c1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers
-                        .content().json(objectMapper.writeValueAsString(visitsOptions)));
+                .andReturn();
+
+        String response2 = result2.getResponse().getContentAsString();
+        JavaType type = objectMapper.getTypeFactory().constructParametricType(List.class, CheckDto.class);
+        List<CheckDto> id = objectMapper.readValue(response2, type);
 
 
         LocalDateTime date1 = LocalDateTime.of(2022, 12, 17, 19, 00);
         LocalDateTime date2 = LocalDateTime.of(2022, 12, 18, 14, 00);
 
+         //tworzene nowych wizyt które wypełnią luki, aby nie było żadnych wolnych slotów
 
-        CreateVisitCommand toSave = new CreateVisitCommand(l1.getId(), p1.getId(), date1);
-        CreateVisitCommand toSave2 = new CreateVisitCommand(l1.getId(), p1.getId(), date2);
+        CreateVisitCommand toSave = new CreateVisitCommand(l1.getId(), p1.getId(), LocalDateTime.parse(id.get(0).getData(), formatter));
+        CreateVisitCommand toSave2 = new CreateVisitCommand(l1.getId(), p1.getId(), LocalDateTime.parse(id.get(1).getData(), formatter));
 
         mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8080/visit/")
                 .content(objectMapper.writeValueAsString(toSave))
@@ -409,7 +417,7 @@ class VisitControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
-
+        //ponowny check aby wywołać błąd
         CreateCheckVisitCommand c2 = new CreateCheckVisitCommand("kardiolog", "kot", start, stop);
 
 

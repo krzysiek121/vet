@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -14,11 +16,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import pl.kurs.vet.VetApplication;
-import pl.kurs.vet.exception.NoEmptySlotsException;
 import pl.kurs.vet.model.Doctor;
 import pl.kurs.vet.model.dto.DoctorDtoGet;
 import pl.kurs.vet.repository.DoctorRepository;
-import pl.kurs.vet.request.CreateCheckVisitCommand;
 import pl.kurs.vet.request.CreateDoctorCommand;
 
 import java.util.Arrays;
@@ -32,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(
         locations = "classpath:application-integrationtest.properties")
 @AutoConfigureMockMvc
+@ActiveProfiles("no-liquibase")
 class DoctorControllerTest {
 
     @Autowired
@@ -44,6 +45,7 @@ class DoctorControllerTest {
     private DoctorRepository doctorRepository;
 
     @Test
+    @WithMockUser(username = "MojUserek", roles = "ADMIN")
     public void shouldGetDoctor() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 11, "xxx");
@@ -66,7 +68,7 @@ class DoctorControllerTest {
     }
 
     @Test
-    public void createDoctorSecoundTest() throws Exception {
+    public void createDoctorSecondTest() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
         //String json = objectMapper.writeValueAsString(l1);

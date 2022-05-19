@@ -11,7 +11,6 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = CheckAnimalValidator.class)
 public @interface CheckAnimalSupport {
 
-
         String message() default "ANIMAL_NOT_SUPPORT";
 
         Class<?>[] groups() default {};

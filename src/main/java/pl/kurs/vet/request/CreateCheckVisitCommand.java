@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//example body: { "type": "kardiolog", "animal": "pies", "from": "date_from", "to": "date_to" }
 @CheckDates
 public class CreateCheckVisitCommand {
     @NotEmpty(message = "TYPE_NOT_EMPTY")

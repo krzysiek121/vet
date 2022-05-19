@@ -4,8 +4,6 @@ import lombok.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 @Getter
@@ -33,7 +31,7 @@ public class Doctor {
     private Set<Visit> visits = new HashSet<>();
 
 
-    public Doctor(String name,String surname,String type, String animalType, Integer salary,String nip) {
+    public Doctor(String name, String surname, String type, String animalType, Integer salary, String nip) {
         this.name = name;
         this.surname = surname;
         this.type = type;
