@@ -18,7 +18,7 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
 
-
+    @Transactional
     public Patient save(CreatePatientCommand command) {
         Patient toSave = new Patient(command.getNameOfAnimal(), command.getSpecies(), command.getRace(),
                 command.getAge(), command.getOwnerName(), command.getOwnerSurname(), command.getEmail());
@@ -30,11 +30,6 @@ public class PatientService {
     }
     @Transactional(readOnly = true)
     public List<Patient> patientListWithPagination(int page, int size) {
-        List<Patient> patients;
-        Pageable paging = PageRequest.of(page, size);
-
-        Page<Patient> pageTuts = patientRepository.findAll(paging);
-
-        return patients = pageTuts.getContent();
+        return patientRepository.findAll(PageRequest.of(page, size)).getContent();
     }
 }

@@ -28,32 +28,31 @@ public class DoctorController {
 
 
     @PostMapping
-    public ResponseEntity<DoctorDtoGet> saveDoctor(@RequestBody @Valid CreateDoctorCommand command) {
-        return new ResponseEntity<>(modelMapper.map(doctorService.save(command), DoctorDtoGet.class), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public DoctorDtoGet saveDoctor(@RequestBody @Valid CreateDoctorCommand command) {
+        return modelMapper.map(doctorService.save(command), DoctorDtoGet.class);
 
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<DoctorDtoGet> getById(@PathVariable(value = "id") int id) {
-        return new ResponseEntity<>(modelMapper.map(doctorService.findDoctorById(id), DoctorDtoGet.class), HttpStatus.OK);
-    }
-    @GetMapping(value = "/exception/{id}")
-    public ResponseEntity<Doctor> getByIdException(@PathVariable(value = "id") int id) {
-        return new ResponseEntity<>(doctorService.findDoctorById(id), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public DoctorDtoGet getById(@PathVariable(value = "id") int id) {
+        return modelMapper.map(doctorService.findDoctorById(id), DoctorDtoGet.class);
     }
 
     @GetMapping
-    public ResponseEntity<List<DoctorDtoGet>> findBAllWithPagination(@RequestParam(defaultValue = "0") int page,
-     @RequestParam(defaultValue = "3") int size) {
-        return new ResponseEntity<>(doctorService.doctorListWithPagination(page, size).stream()
-                .map(s -> modelMapper.map(s, DoctorDtoGet.class)).collect(Collectors.toList()), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public List<DoctorDtoGet> findBAllWithPagination(@RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "3") int size) {
+        return doctorService.doctorListWithPagination(page, size).stream()
+                .map(s -> modelMapper.map(s, DoctorDtoGet.class)).collect(Collectors.toList());
     }
 
-
     @PutMapping(value = "/{id}/fire")
-    public ResponseEntity<String> softDelete(@PathVariable(value = "id") int id) {
+    @ResponseStatus(HttpStatus.OK)
+    public String softDelete(@PathVariable(value = "id") int id) {
         doctorService.softDelete(id);
-        return new ResponseEntity<>("CHANGED_DOCTOR_STATUS", HttpStatus.OK);
+        return "CHANGED_DOCTOR_STATUS";
 
     }
 }

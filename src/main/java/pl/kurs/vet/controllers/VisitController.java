@@ -26,24 +26,28 @@ public class VisitController {
     private final VisitService visitService;
 
     @PostMapping
-    public ResponseEntity<VisitSaveResponse> save(@RequestBody @Valid CreateVisitCommand visitCommand, HttpServletRequest request) throws MessagingException {
-        return new ResponseEntity<VisitSaveResponse>(visitService.save(visitCommand, request), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public VisitSaveResponse save(@RequestBody @Valid CreateVisitCommand visitCommand, HttpServletRequest request) throws MessagingException {
+        return visitService.save(visitCommand, request);
     }
 
     @GetMapping(value = "/confirm/{token}")
-    public ResponseEntity<ConfirmResponse> confirm(@PathVariable(value = "token") String token) throws Exception {
-        return new ResponseEntity<ConfirmResponse>(visitService.confirm(token), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public ConfirmResponse confirm(@PathVariable(value = "token") String token) throws Exception {
+        return visitService.confirm(token);
 
     }
 
     @PostMapping(value = "/check/")
-    public ResponseEntity<List<CheckDto>> check(@RequestBody @Valid CreateCheckVisitCommand visitCommand) {
-        return new ResponseEntity<List<CheckDto>>(visitService.check(visitCommand), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public List<CheckDto> check(@RequestBody @Valid CreateCheckVisitCommand visitCommand) {
+        return visitService.check(visitCommand);
     }
 
     @GetMapping(value = "/cancel/{token}")
-    public ResponseEntity<ConfirmResponse> deleteVisit(@PathVariable(value = "token") String token) {
-        return new ResponseEntity<ConfirmResponse>(visitService.deleteByToken(token), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public ConfirmResponse deleteVisit(@PathVariable(value = "token") String token) {
+        return visitService.deleteByToken(token);
     }
 
 

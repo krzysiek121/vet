@@ -34,11 +34,7 @@ public class DoctorService {
 
     @Transactional(readOnly = true)
     public List<Doctor> doctorListWithPagination(int page, int size) {
-
-        Pageable paging = PageRequest.of(page, size);
-
-        Page<Doctor> pageTuts = doctorRepository.findAll(paging);
-        return pageTuts.getContent();
+        return doctorRepository.findAll(PageRequest.of(page, size)).getContent();
     }
 
     @Transactional

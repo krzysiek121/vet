@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -48,7 +49,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = {VetApplication.class})
 @TestPropertySource(
-        locations = "classpath:src/test/resources/application-integrationtest.properties")
+  locations = "classpath:application-integrationtest.properties")
+
 @AutoConfigureMockMvc
 @Transactional
 class VisitControllerTest {
@@ -73,6 +75,7 @@ class VisitControllerTest {
     private ModelMapper modelMapper;
 
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldAddVisitAndReturnCorrectId() throws Exception {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -105,6 +108,7 @@ class VisitControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldReturnCorrectTimeSlotsForVisits() throws Exception {
 
         //Doktor A - CHOMIKI: [zawaolne caly pon,wtorek,srodek,czwartek: 12-13, piatek,sob 10-11, niedz]
@@ -153,6 +157,7 @@ class VisitControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldDeleteVisit() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
@@ -191,6 +196,7 @@ class VisitControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldReturnDoctorHaveVisitException() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
@@ -221,6 +227,7 @@ class VisitControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldReturnVisitConfirmation() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
@@ -256,24 +263,10 @@ class VisitControllerTest {
 
     }
 
-    @Test
-    public void shouldReturnCorrectTimeVisitSlots() throws Exception {
 
-        Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
-        Patient p1 = new Patient("xx", "xx", "xxx", 11, "xx", "xxx", "wardawa.post@gmail.com");
-
-        patientRepository.saveAndFlush(p1);
-        doctorRepository.saveAndFlush(l1);
-        LocalDateTime time = LocalDateTime.of(2022, 12, 10, 15, 00);
-        List<LocalDateTime> slots = new ArrayList<>();
-        slots.add(time);
-        for (int i = 0; i < 65; i++) {
-            visitRepository.saveAndFlush(new Visit(l1, p1, slots.get(slots.size() - 1).plusHours(1), "token", LocalDateTime.now()));
-
-        }
-    }
 
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldReturnNoTypeDoctorException() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
@@ -297,6 +290,7 @@ class VisitControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldReturnExceptionDateToEarlierThanDateFrom() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
@@ -320,6 +314,7 @@ class VisitControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldThrowFutureDateException() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 000, "xxx");
@@ -346,6 +341,7 @@ class VisitControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldThrowNoEmptySlotsException() throws Exception {
 
 

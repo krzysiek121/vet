@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = {VetApplication.class})
 @TestPropertySource(
-        locations = "classpath:src/test/resources/application-integrationtest.properties")
+        locations = "classpath:application-integrationtest.properties")
 @AutoConfigureMockMvc
 class PatientControllerTest {
 
@@ -39,10 +40,9 @@ class PatientControllerTest {
     @Autowired
     private PatientRepository patientRepository;
 
-    @Autowired
-    private PatientService patientService;
 
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void createPatient() throws Exception {
 
         Patient l1 = new Patient("xx", "xx", "xxx", 11, "xx", "xxx", "wardawa.post@gmail.com");
@@ -62,6 +62,7 @@ class PatientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void createPatientSecoundTest() throws Exception {
 
         Patient l1 = new Patient("xx", "xx", "xxx", 11, "xx", "xxx", "wardawa.post@gmail.com");
@@ -75,6 +76,7 @@ class PatientControllerTest {
 
     }
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldReturnCorrectSizeOfList() throws Exception {
 
         Patient p1 = new Patient("xx","jamnik", "jamnik", 18,"Adam","Nowak", "wardawa.post@gmail.com");

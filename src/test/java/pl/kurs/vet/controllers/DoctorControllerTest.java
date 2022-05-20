@@ -32,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(
         locations = "classpath:application-integrationtest.properties")
 @AutoConfigureMockMvc
-@ActiveProfiles("no-liquibase")
 class DoctorControllerTest {
 
     @Autowired
@@ -45,7 +44,7 @@ class DoctorControllerTest {
     private DoctorRepository doctorRepository;
 
     @Test
-    @WithMockUser(username = "MojUserek", roles = "ADMIN")
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldGetDoctor() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 11, "xxx");
@@ -68,6 +67,7 @@ class DoctorControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void createDoctorSecondTest() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
@@ -86,6 +86,7 @@ class DoctorControllerTest {
 
     }
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldGetAddedDoctors() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
@@ -116,6 +117,7 @@ class DoctorControllerTest {
 
     }
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldGetAddedDoctorsAndReturnListSize() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
@@ -144,6 +146,7 @@ class DoctorControllerTest {
 
     }
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldGetCorrectStatusAfterAddDoctor() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
@@ -156,11 +159,12 @@ class DoctorControllerTest {
 
     }
     @Test
+    @WithMockUser(username = "user", roles = "ADMIN")
     public void shouldFireDoctor() throws Exception {
 
         Doctor l1 = new Doctor("Andrzej", "xx", "kardiolog", "kot", 2, "xxx");
 
-        String message = "changed status of given doctor, this doctor will not be able to handle any visits";
+        String message = "CHANGED_DOCTOR_STATUS";
 
         doctorRepository.saveAndFlush(l1);
 
